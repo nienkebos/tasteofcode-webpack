@@ -1,15 +1,13 @@
-// webpack.config.dev.js
+// webpack.config.prod.js
 var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
   // Maps transpiled code to written code when errors happen in the browser for
-  // easier debugging
-  devtool: 'cheap-module-eval-source-map',
+  // easier debugging [OPTIONAL!]
+  devtool: 'source-map',
   // This is what goes INTO Webpack
   entry: [
-    'eventsource-polyfill', // necessary for hot reloading with IE
-    'webpack-hot-middleware/client',
     './src/index' // entry point for our code! <------------------------------<<
   ],
   // This is where it comes out
@@ -18,10 +16,19 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/static/'
   },
-  // Plugins help us with hot reloading and error handling
+  // Plugins help us with minifying and optimization
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {
+        warnings: false
+      }
+    })
   ],
   // All the loaders!
   //
